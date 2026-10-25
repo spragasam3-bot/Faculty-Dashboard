@@ -23,6 +23,12 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Ensure database tables and sample records are initialized immediately
+try:
+    init_db()
+except Exception as e:
+    print(f"[DB] Initial db init note: {e}")
+
 # Enable CORS for frontend development server and cloud deployments
 app.add_middleware(
     CORSMiddleware,
