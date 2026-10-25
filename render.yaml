@@ -1,0 +1,41 @@
+services:
+  # -------------------------------------------------------------
+  # 1. FastAPI Backend Web Service
+  # -------------------------------------------------------------
+  - type: web
+    name: faculty-dashboard-api
+    runtime: python
+    rootDir: backend
+    plan: free
+    region: oregon
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    autoDeployTrigger: 'on'
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true
+      - key: ACCESS_TOKEN_EXPIRE_MINUTES
+        value: "480"
+      - key: ADMIN_EMAIL
+        value: admin@university.edu
+      - key: ADMIN_PASSWORD
+        value: Admin@123
+      - key: ADMIN_NAME
+        value: Institutional Administrator
+
+  # -------------------------------------------------------------
+  # 2. React (Vite) Frontend Static Site
+  # -------------------------------------------------------------
+  - type: web
+    name: faculty-dashboard-web
+    runtime: static
+    rootDir: frontend
+    plan: free
+    region: oregon
+    buildCommand: npm install && npm run build
+    staticPublishPath: dist
+    autoDeployTrigger: 'on'
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

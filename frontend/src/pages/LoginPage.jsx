@@ -68,7 +68,11 @@ export default function LoginPage({ onLoginSuccess, sessionExpiredMessage }) {
         throw new Error('Authentication succeeded but invalid response received.');
       }
     } catch (err) {
-      setServerError(err.message || 'Unable to connect to the server. Please try again.');
+      let msg = err.message || 'Unable to connect to the server. Please try again.';
+      if (msg.toLowerCase().includes('failed to fetch') || msg.toLowerCase().includes('networkerror') || msg.toLowerCase().includes('load failed')) {
+        msg = 'Connecting to backend... If the free cloud server was sleeping, it takes ~30-40 seconds to spin up. Please wait a moment and click Sign In again!';
+      }
+      setServerError(msg);
     } finally {
       setIsLoading(false);
     }

@@ -3,7 +3,21 @@
  * Handles JWT token injection, centralized error handling, and 401 session expiration.
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api';
+export function getApiBaseUrl() {
+  try {
+    const custom = localStorage.getItem('faculty_hub_api_base_url');
+    if (custom && custom.trim()) {
+      return custom.trim().replace(/\/+$/, '');
+    }
+  } catch {
+    // LocalStorage unavailable
+  }
+  const envUrl = import.meta.env.VITE_API_BASE_URL;
+  if (envUrl && envUrl.trim()) {
+    return envUrl.trim().replace(/\/+$/, '');
+  }
+  return '/api';
+}
 
 const TOKEN_KEY = 'faculty_hub_token';
 const USER_KEY = 'faculty_hub_user';
@@ -57,7 +71,8 @@ export const authStorage = {
 };
 
 async function request(endpoint, options = {}) {
-  const url = `${API_BASE_URL}${endpoint}`;
+  const baseUrl = getApiBaseUrl();
+  const url = `${baseUrl}${endpoint}`;
   const token = authStorage.getToken();
 
   const headers = {
@@ -182,4 +197,14 @@ export const api = {
 
   // Appraisal
   getFacultyAppraisal: (facultyId) => request(`/appraisal/${facultyId}`),
+
+  // Configuration
+  getBaseUrl: getApiBaseUrl,
+  setCustomBaseUrl: (url) => {
+    if (url) {
+      localStorage.setItem('faculty_hub_api_base_url', url);
+    } else {
+      localStorage.removeItem('faculty_hub_api_base_url');
+    }
+  },
 };

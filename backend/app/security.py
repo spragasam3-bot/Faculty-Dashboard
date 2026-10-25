@@ -19,8 +19,8 @@ BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 load_dotenv(os.path.join(BACKEND_DIR, ".env"))
 load_dotenv(os.path.join(BASE_DIR, ".env"))
 
-# Read secret key from environment variable
-JWT_SECRET = os.getenv("JWT_SECRET")
+# Read secret key from environment variable (supports JWT_SECRET or standard SECRET_KEY)
+JWT_SECRET = os.getenv("JWT_SECRET") or os.getenv("SECRET_KEY")
 if not JWT_SECRET:
     # Fallback to local development secret if environment is not configured
     JWT_SECRET = "faculty-hub-local-dev-fallback-secret-key-32chars"
